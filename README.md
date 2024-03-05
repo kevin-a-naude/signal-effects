@@ -2,9 +2,9 @@
 
 ---
 
-# signal-effects
+# @in-code/signal-effects
 
-[![npm version](https://badgen.net/npm/v/signal-effects)](https://npm.im/signal-effects) [![npm downloads](https://badgen.net/npm/dm/signal-effects)](https://npm.im/signal-effects)
+[![npm version](https://badgen.net/npm/v/@in-code/signal-effects)](https://npm.im/@in-code/signal-effects) [![npm downloads](https://badgen.net/npm/dm/@in-code/signal-effects)](https://npm.im/@in-code/signal-effects)
 
 This library is a simple but robust implementation reactive signals and effects. Signals and effect have become popular in web application frameworks because they allow a change in a value (signal) in one part of the application to implicitly trigger updates (effects) in dependent parts of the application. Most beneficially, signals do not need to understand the effects that depend upon them.
 
@@ -20,7 +20,7 @@ effect(() => {
 ## Install
 
 ```bash
-npm i signal-effects
+npm i @in-code/signal-effects
 ```
 
 ## Sponsors
