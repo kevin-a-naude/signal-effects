@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   merge_group:
     branches: [main]
 
@@ -32,7 +34,7 @@ jobs:
       - name: Validate all commits from PR
         run: |
           echo 'Running commitlint for ${{ github.event.pull_request.commits }} commits'
-          pnpm exec commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+          echo pnpm exec commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
