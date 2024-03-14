@@ -1,6 +1,9 @@
+<!--
 **💛 You can help the author become a full-time open-source maintainer by [sponsoring him on GitHub](https://github.com/sponsors/kevin-in-code).**
 
 ---
+
+-->
 
 # @in-code/signal-effects
 
@@ -23,9 +26,11 @@ effect(() => {
 npm i @in-code/signal-effects
 ```
 
+<!--
 ## Sponsors
 
 [![sponsors](https://sponsors-images.kevin-in-code.dev/sponsors.svg)](https://github.com/sponsors/kevin-in-code)
+-->
 
 ## License
 
