@@ -22,27 +22,48 @@ type EqualityComparator<T> = (oldValue: T, newValue: T) => boolean;
 
 /* Supporting Functions */
 
+function handleException(e: unknown) {
+  console.error(e);
+}
+
+function invokeEffect(e: Effect) {
+  // Effects should not throw exceptions.
+  //
+  // Effects are run in varying contexts. If we permit them to throw exceptions,
+  // we would extend the need for exception handling to every context in which
+  // an effect may run. That is not practicable.
+  try {
+    return e.fn();
+  } catch (e) {
+    exceptionHandler(e);
+  }
+}
+
 function propagateChange(s: AnySignal) {
-  s.dependents.forEach((effect) => effect.fn());
+  s.dependents.forEach(invokeEffect);
 }
 
 function propagateChanges(updatedSignals: AnySignal[]) {
-  updatedSignals.forEach((signal) => propagateChange(signal));
+  updatedSignals.forEach(propagateChange);
 }
 
 function releaseEffect(e: Effect) {
-  e.dependencies.forEach((s) => decoupleSignalEffect(s, e));
-}
-
-function decoupleSignalEffect(s: AnySignal, e: Effect) {
-  s.dependents.delete(e);
-  e.dependencies.delete(s);
+  // Unregister the effect's interest in its dependencies.
+  for (const s of e.dependencies) {
+    s.dependents.delete(e);
+    e.dependencies.delete(s);
+  }
 }
 
 /* Exported Functions */
 
 let activeBatch: Set<AnySignal> | null = null;
 let activeEffect: Effect | null = null;
+let exceptionHandler: (e: unknown) => void = handleException;
+
+export function setEffectExceptionHandler(handler: (e: unknown) => void) {
+  exceptionHandler = handler;
+}
 
 export function batch<R = void>(fn: () => R): R {
   if (activeBatch) return fn();
@@ -57,26 +78,16 @@ export function batch<R = void>(fn: () => R): R {
   }
 }
 
-export function effect(
-  fn: () => void,
-  errorHandler?: (e: unknown) => void
-): Release {
-  const safeFn = () => {
-    try {
-      fn();
-    } catch (e) {
-      errorHandler?.(e);
-    }
-  };
+export function effect(fn: () => void): Release {
   const theEffect = {
-    fn: safeFn,
+    fn,
     dependencies: new Set<AnySignal>(),
   };
 
   const ongoingEffect = activeEffect;
   activeEffect = theEffect;
   try {
-    theEffect.fn();
+    fn();
   } catch (e) {
     releaseEffect(theEffect);
     throw e;
