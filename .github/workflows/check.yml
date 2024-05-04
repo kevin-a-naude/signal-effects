@@ -5,6 +5,9 @@ on:
     branches: [main]
     types: [opened, edited, synchronize]
 
+env:
+  NODE_VERSION: 20.x
+
 jobs:
   check-pr-title:
     runs-on: ubuntu-latest
@@ -15,12 +18,7 @@ jobs:
           helpMessage: "Please follow conventional commits, e.g. 'feat: description of feature'"
 
   test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [18.x]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -29,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache ~/.pnpm-store
         uses: actions/cache@v4
@@ -37,10 +35,10 @@ jobs:
           cache-name: cache-pnpm-store
         with:
           path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ matrix.node-version }}-test-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-test-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-${{ matrix.node-version }}-test-
+            ${{ runner.os }}-${{ env.NODE_VERSION }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-${{ env.NODE_VERSION }}-test-
             ${{ runner.os }}-
 
       - name: Install pnpm
