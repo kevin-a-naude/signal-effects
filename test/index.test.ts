@@ -16,7 +16,7 @@ describe('effect behaviour', () => {
     const s = signal(1);
 
     let effectObserved = false;
-    const releaseE = effect(() => (effectObserved = true));
+    const releaseE = effect(() => (effectObserved = s.value > 1));
 
     s.value++;
 
@@ -26,6 +26,20 @@ describe('effect behaviour', () => {
   });
 
   test('signals do not propagate to independent effects', () => {
+    const s = signal(1);
+
+    let effectObserved = false;
+    const releaseE = effect(() => (effectObserved = true));
+    effectObserved = false; // <-- ignore initial run of effect
+
+    s.value++;
+
+    assert.isFalse(effectObserved, 'an effect should not be observed');
+
+    releaseE();
+  });
+
+  test('signals do not propagate to unrelated effects', () => {
     const s1 = signal(1);
     const s2 = signal(2);
 
